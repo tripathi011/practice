@@ -2,6 +2,11 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+parameters:
+  circleci_image:
+    type: string
+    default: circleci/node:latest
+    
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
@@ -23,7 +28,58 @@ jobs:
       - run: pwd
       - run: ls -Rla ~
       - run: df -h
-      - run: free -h          
+      - run: free -h
+
+  build-frontend:
+    docker:
+      - image: << pipeline.parameters.circleci_image >>
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            cd frontend
+            npm install
+      - run:
+          name: Compile the code
+          command: |
+            cd frontend
+            npm run build
+      - slack/status
+
+  test-frontend:
+    docker:
+      - image: << pipeline.parameters.circleci_image >>
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            cd frontend
+            npm install
+      - run:
+          name: Test the code
+          command: |
+            cd frontend
+            npm run test
+      - slack/status
+
+  analyze-frontend:
+    docker:
+      - image: << pipeline.parameters.circleci_image >>
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            cd frontend
+            npm install
+      - run:
+          name: Analyze the code
+          command: |
+            cd frontend
+            npm audit fix --audit-level=critical --force
+      - slack/status                
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -31,3 +87,21 @@ workflows:
   hello-workflow:
     jobs:
       - hello
+      - build-frontend:
+          requires:
+            - hello
+          filters:
+            branches:
+              ignore: main
+      - test-frontend:
+          requires:
+            - build-frontend
+          filters:
+            branches:
+              ignore: main
+      - analyze-frontend:
+          requires:
+            - test-frontend
+          filters:
+            branches:
+              ignore: main
