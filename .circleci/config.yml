@@ -6,6 +6,9 @@ parameters:
   circleci_image:
     type: string
     default: circleci/node:latest
+
+orbs: 
+   slack/status: circleci/slack@3.4.2
     
 orbs:
   slack: circleci/slack@3.4.2  # for slack integration to https://sumitarora-workspace.slack.com; reference: https://circleci.com/blog/continuous-integration-slack-twilio/
@@ -89,7 +92,10 @@ jobs:
 workflows:
   hello-workflow:
     jobs:
-      - hello
+      - hello:
+          filters:
+            branches:
+              ignore: main
       - build-frontend:
           requires:
             - hello
