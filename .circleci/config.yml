@@ -6,6 +6,9 @@ parameters:
   circleci_image:
     type: string
     default: circleci/node:latest
+    
+orbs:
+  slack: circleci/slack@3.4.2  # for slack integration to https://sumitarora-workspace.slack.com; reference: https://circleci.com/blog/continuous-integration-slack-twilio/
 
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
