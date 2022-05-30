@@ -22,7 +22,7 @@ jobs:
       - checkout
       - run: pwd
       - run: ls -Rla ~
-      #- run: node -v
+      #- run: node -v 
       - run: df -h
       - run: free -h          
 
