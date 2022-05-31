@@ -48,6 +48,7 @@ jobs:
           name: Compile the code
           command: |
             cd frontend
+            node --openssl-legacy-provider ./node_modules/.bin/gatsby build
             npm run build
       - slack/status
 
