@@ -5,7 +5,7 @@ version: 2.1
 parameters:
   circleci_image:
     type: string
-    default: circleci/node:latest
+    default: circleci/node:13.8.0
 
 orbs: 
      slack: circleci/slack@3.4.2
@@ -29,6 +29,7 @@ jobs:
       - run: printenv
       - checkout
       - run: pwd
+      - run: node -v 
       - run: ls -Rla ~
       - run: df -h
       - run: free -h
